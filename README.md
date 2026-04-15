@@ -5,7 +5,7 @@
 
 A Python app that turns a [Turing Smart Screen](https://github.com/mathoudebine/turing-smart-screen-python) into a live notification display and clock for macOS.
 
-![Clock display on simulated screen](screencap.png)
+![Clock display on simulated screen](screencap.png) ![Clock with background image](screencap-background.png)
 
 - **Clock** — fills the screen, updates every minute, fully customizable (font, size, color, format)
 - **Notifications** — when a macOS notification arrives, the screen switches to show the app icon, app name, title, and message, then returns to the clock
@@ -146,8 +146,6 @@ The submodule ships ready-made backgrounds sized for Turing screens:
 clock:
   background_image: "turing-smart-screen-python/res/backgrounds/example_320x480.png"
 ```
-
-![Clock with background image](screencap-background.png)
 
 ## Running at Login (Background Service)
 
