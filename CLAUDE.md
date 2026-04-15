@@ -27,6 +27,9 @@ Two states: `CLOCK` and `NOTIFICATION`
 - Notification display interrupts clock for `notifications.display_duration` seconds
 - Notification subprocess runs in a background thread, feeds a `queue.Queue`
 
+### Background Images
+Both `ClockConfig` and `NotificationsConfig` have an optional `background_image` field (path to any PIL-supported image file). When set, `_make_background()` in `renderer.py` loads and scales the image to fit the screen, replacing the solid `background_color`. Falls back to `background_color` if the path is missing or the file fails to load. Ready-made images sized for Turing screens live in `turing-smart-screen-python/res/backgrounds/`.
+
 ### Icon Handling
 App icons come as `.icns` files from `notification_listener.py` (resolved via `mdfind` + `Info.plist`).
 Convert to PNG using the built-in macOS `sips` tool:

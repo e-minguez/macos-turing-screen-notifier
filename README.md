@@ -120,7 +120,8 @@ All settings live in `config.yaml`.
 | `font` | Roboto Bold | Path to a TTF font (relative to this folder) |
 | `font_size` | `0` | Font size in px — `0` auto-fits to fill the screen |
 | `color` | `"#FFFFFF"` | Text color (hex, named color, or `[R, G, B]`) |
-| `background_color` | `"#000000"` | Background color |
+| `background_color` | `"#000000"` | Background color (used when no `background_image` is set) |
+| `background_image` | _(none)_ | Path to a background image — overrides `background_color`. Scaled to fit the screen. |
 | `format` | `"%H:%M"` | [strftime](https://strftime.org) format — e.g. `"%H:%M:%S"` to include seconds |
 | `position` | `"center"` | `"center"`, `"top"`, or `"bottom"` |
 
@@ -134,7 +135,15 @@ All settings live in `config.yaml`.
 | `title_font_size` | `20` | Title font size |
 | `body_font_size` | `16` | Body text font size |
 | `text_color` | `"#FFFFFF"` | Text color |
-| `background_color` | `"#1a1a2e"` | Background color |
+| `background_color` | `"#1a1a2e"` | Background color (used when no `background_image` is set) |
+| `background_image` | _(none)_ | Path to a background image — overrides `background_color`. Scaled to fit the screen. |
+
+The submodule ships ready-made backgrounds sized for Turing screens:
+
+```yaml
+clock:
+  background_image: "turing-smart-screen-python/res/backgrounds/example_320x480.png"
+```
 
 ## Running at Login (Background Service)
 

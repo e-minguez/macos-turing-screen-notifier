@@ -28,6 +28,7 @@ class ClockConfig:
     font_size: int = 80
     color: Tuple[int, int, int] = field(default_factory=lambda: (255, 255, 255))
     background_color: Tuple[int, int, int] = field(default_factory=lambda: (0, 0, 0))
+    background_image: str = ""
     format: str = "%H:%M"
     position: str = "center"
 
@@ -43,6 +44,7 @@ class NotificationsConfig:
     background_color: Tuple[int, int, int] = field(
         default_factory=lambda: (26, 26, 46)
     )
+    background_image: str = ""
 
 
 @dataclass
@@ -80,6 +82,7 @@ def load_config(path: str = "config.yaml") -> Config:
         font_size=int(clock_raw.get("font_size", 80)),
         color=_parse_color(clock_raw.get("color", "#FFFFFF")),
         background_color=_parse_color(clock_raw.get("background_color", "#000000")),
+        background_image=clock_raw.get("background_image", ""),
         format=clock_raw.get("format", "%H:%M"),
         position=clock_raw.get("position", "center"),
     )
@@ -97,6 +100,7 @@ def load_config(path: str = "config.yaml") -> Config:
         background_color=_parse_color(
             notif_raw.get("background_color", "#1a1a2e")
         ),
+        background_image=notif_raw.get("background_image", ""),
     )
 
     return Config(display=display, clock=clock, notifications=notifications)

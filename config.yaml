@@ -4,13 +4,15 @@ display:
   width: 320               # Display width in pixels
   height: 480              # Display height in pixels
   orientation: "270"     # PORTRAIT or LANDSCAPE
-  brightness: 50           # 0-100
+  brightness: 25           # 0-100
 
 clock:
   font: "turing-smart-screen-python/res/fonts/roboto/Roboto-Bold.ttf"
   font_size: 0              # 0 = auto-fit to screen size
   color: "#FFFFFF"
   background_color: "#000000"
+  # background_image: "background.png"  # path to image file; overrides background_color if set
+  background_image: "turing-smart-screen-python/res/backgrounds/example_320x480.png"
   format: "%H:%M"          # strftime format — use "%H:%M:%S" to show seconds
   position: "center"       # center, top, or bottom
 
@@ -22,3 +24,4 @@ notifications:
   body_font_size: 16
   text_color: "#FFFFFF"
   background_color: "#1a1a2e"
+  # background_image: "background.png"  # path to image file; overrides background_color if set

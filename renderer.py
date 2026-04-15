@@ -59,6 +59,20 @@ def _wrap_text(text: str, font: ImageFont.FreeTypeFont, max_width: int) -> list[
     return lines
 
 
+def _make_background(
+    image_path: str, fallback_color, width: int, height: int
+) -> Image.Image:
+    """Return an RGB image sized (width, height). Uses image_path if valid, else solid color."""
+    if image_path and os.path.exists(image_path):
+        try:
+            bg = Image.open(image_path).convert("RGB")
+            bg = bg.resize((width, height), Image.LANCZOS)
+            return bg
+        except Exception:
+            pass
+    return Image.new("RGB", (width, height), fallback_color)
+
+
 def _load_icon(icon_path: str, size: int) -> Optional[Image.Image]:
     if not icon_path or not os.path.exists(icon_path):
         return None
@@ -84,7 +98,7 @@ def _load_icon(icon_path: str, size: int) -> Optional[Image.Image]:
 
 
 def render_clock(cfg: ClockConfig, width: int, height: int) -> Image.Image:
-    img = Image.new("RGB", (width, height), cfg.background_color)
+    img = _make_background(cfg.background_image, cfg.background_color, width, height)
     draw = ImageDraw.Draw(img)
 
     time_str = datetime.now().strftime(cfg.format)
@@ -122,7 +136,7 @@ def render_notification(
     width: int,
     height: int,
 ) -> Image.Image:
-    img = Image.new("RGB", (width, height), cfg.background_color)
+    img = _make_background(cfg.background_image, cfg.background_color, width, height)
     draw = ImageDraw.Draw(img)
 
     padding = 10
