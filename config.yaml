@@ -1,0 +1,24 @@
+display:
+  revision: "A"         # "A" for Turing 3.5" hardware, "SIMU" for testing
+  com_port: "AUTO"         # Serial port or "AUTO" for auto-detection
+  width: 320               # Display width in pixels
+  height: 480              # Display height in pixels
+  orientation: "270"     # PORTRAIT or LANDSCAPE
+  brightness: 50           # 0-100
+
+clock:
+  font: "turing-smart-screen-python/res/fonts/roboto/Roboto-Bold.ttf"
+  font_size: 0              # 0 = auto-fit to screen size
+  color: "#FFFFFF"
+  background_color: "#000000"
+  format: "%H:%M"          # strftime format — use "%H:%M:%S" to show seconds
+  position: "center"       # center, top, or bottom
+
+notifications:
+  display_duration: 8      # Seconds to show notification before returning to clock
+  icon_size: 64            # App icon size in pixels (square)
+  font: "turing-smart-screen-python/res/fonts/roboto/Roboto-Bold.ttf"
+  title_font_size: 20
+  body_font_size: 16
+  text_color: "#FFFFFF"
+  background_color: "#1a1a2e"

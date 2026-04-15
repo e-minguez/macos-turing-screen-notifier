@@ -1,0 +1,28 @@
+# Python
+venv/
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Logs
+*.log
+*.err
+tmp/
+
+# Secrets / local overrides
+config.local.yaml
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
