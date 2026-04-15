@@ -30,6 +30,9 @@ Two states: `CLOCK` and `NOTIFICATION`
 ### Background Images
 Both `ClockConfig` and `NotificationsConfig` have an optional `background_image` field (path to any PIL-supported image file). When set, `_make_background()` in `renderer.py` loads and scales the image to fit the screen, replacing the solid `background_color`. Falls back to `background_color` if the path is missing or the file fails to load. Ready-made images sized for Turing screens live in `turing-smart-screen-python/res/backgrounds/`.
 
+### Clock Text Outline
+`ClockConfig` has `stroke_width` (int, default `0`) and `stroke_color` (RGB tuple) fields. When `stroke_width > 0`, Pillow's built-in `stroke_width`/`stroke_fill` parameters on `draw.text()` are used — no manual offset drawing needed. Useful for readability over background images.
+
 ### Icon Handling
 App icons come as `.icns` files from `notification_listener.py` (resolved via `mdfind` + `Info.plist`).
 Convert to PNG using the built-in macOS `sips` tool:

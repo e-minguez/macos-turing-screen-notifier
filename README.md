@@ -124,6 +124,8 @@ All settings live in `config.yaml`.
 | `background_image` | _(none)_ | Path to a background image — overrides `background_color`. Scaled to fit the screen. |
 | `format` | `"%H:%M"` | [strftime](https://strftime.org) format — e.g. `"%H:%M:%S"` to include seconds |
 | `position` | `"center"` | `"center"`, `"top"`, or `"bottom"` |
+| `stroke_width` | `0` | Outline thickness in pixels around the clock digits (`0` = disabled) |
+| `stroke_color` | `"#000000"` | Outline color — useful for readability over background images |
 
 ### `notifications`
 

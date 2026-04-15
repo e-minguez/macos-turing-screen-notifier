@@ -12,9 +12,11 @@ clock:
   color: "#FFFFFF"
   background_color: "#000000"
   # background_image: "background.png"  # path to image file; overrides background_color if set
-  background_image: "turing-smart-screen-python/res/backgrounds/example_320x480.png"
+  background_image: "/Users/eminguez/Pictures/PXL_20260113_071039611.jpg"
   format: "%H:%M"          # strftime format — use "%H:%M:%S" to show seconds
   position: "center"       # center, top, or bottom
+  stroke_width: 3          # outline thickness in pixels (0 = disabled)
+  stroke_color: "#000000"  # outline color
 
 notifications:
   display_duration: 8      # Seconds to show notification before returning to clock

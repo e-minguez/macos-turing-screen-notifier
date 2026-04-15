@@ -31,6 +31,8 @@ class ClockConfig:
     background_image: str = ""
     format: str = "%H:%M"
     position: str = "center"
+    stroke_width: int = 0
+    stroke_color: Tuple[int, int, int] = field(default_factory=lambda: (0, 0, 0))
 
 
 @dataclass
@@ -85,6 +87,8 @@ def load_config(path: str = "config.yaml") -> Config:
         background_image=clock_raw.get("background_image", ""),
         format=clock_raw.get("format", "%H:%M"),
         position=clock_raw.get("position", "center"),
+        stroke_width=int(clock_raw.get("stroke_width", 0)),
+        stroke_color=_parse_color(clock_raw.get("stroke_color", "#000000")),
     )
 
     notifications = NotificationsConfig(

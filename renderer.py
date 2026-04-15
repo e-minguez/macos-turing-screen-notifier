@@ -123,7 +123,14 @@ def render_clock(cfg: ClockConfig, width: int, height: int) -> Image.Image:
     else:  # center
         y = (height - text_h) // 2 - bbox[1]
 
-    draw.text((x, y), time_str, font=font, fill=cfg.color)
+    draw.text(
+        (x, y),
+        time_str,
+        font=font,
+        fill=cfg.color,
+        stroke_width=cfg.stroke_width,
+        stroke_fill=cfg.stroke_color if cfg.stroke_width else None,
+    )
     return img
 
 
