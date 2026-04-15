@@ -147,6 +147,8 @@ clock:
   background_image: "turing-smart-screen-python/res/backgrounds/example_320x480.png"
 ```
 
+![Clock with background image](screencap-background.png)
+
 ## Running at Login (Background Service)
 
 Use a macOS **LaunchAgent** to start the app automatically at login.
