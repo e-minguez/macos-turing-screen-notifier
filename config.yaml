@@ -1,29 +1,28 @@
 display:
-  revision: "A"         # "A" for Turing 3.5" hardware, "SIMU" for testing
-  com_port: "AUTO"         # Serial port or "AUTO" for auto-detection
-  width: 320               # Display width in pixels
-  height: 480              # Display height in pixels
-  orientation: "270"     # PORTRAIT or LANDSCAPE
-  brightness: 25           # 0-100
+  revision: "A"              # "A" for Turing 3.5" hardware, "SIMU" for testing
+  com_port: "AUTO"           # Serial port or "AUTO" for auto-detection
+  width: 320                 # Display width in pixels
+  height: 480                # Display height in pixels
+  orientation: "270"         # PORTRAIT / LANDSCAPE / REVERSE_PORTRAIT / REVERSE_LANDSCAPE (or 0/90/180/270)
+  brightness: 25             # 0-100
 
 clock:
   font: "turing-smart-screen-python/res/fonts/roboto/Roboto-Bold.ttf"
-  font_size: 0              # 0 = auto-fit to screen size
+  font_size: 0               # 0 = auto-fit to screen size
   color: "#FFFFFF"
   background_color: "#000000"
-  # background_image: "background.png"  # path to image file; overrides background_color if set
-  background_image: "/Users/eminguez/Pictures/PXL_20260113_071039611.jpg"
-  format: "%H:%M"          # strftime format — use "%H:%M:%S" to show seconds
-  position: "center"       # center, top, or bottom
-  stroke_width: 3          # outline thickness in pixels (0 = disabled)
-  stroke_color: "#000000"  # outline color
+  # background_image: "turing-smart-screen-python/res/backgrounds/example_320x480.png"
+  format: "%H:%M"            # strftime format — use "%H:%M:%S" to show seconds
+  position: "center"         # center, top, or bottom
+  stroke_width: 0            # outline thickness in pixels (0 = disabled)
+  stroke_color: "#000000"    # outline color
 
 notifications:
-  display_duration: 8      # Seconds to show notification before returning to clock
-  icon_size: 64            # App icon size in pixels (square)
+  display_duration: 8        # Seconds to show notification before returning to clock
+  icon_size: 64              # App icon size in pixels (square)
   font: "turing-smart-screen-python/res/fonts/roboto/Roboto-Bold.ttf"
   title_font_size: 20
   body_font_size: 16
   text_color: "#FFFFFF"
   background_color: "#1a1a2e"
-  # background_image: "background.png"  # path to image file; overrides background_color if set
+  # background_image: "turing-smart-screen-python/res/backgrounds/example_320x480.png"
