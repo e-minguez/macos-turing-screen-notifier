@@ -149,11 +149,11 @@ class NotificationWatcher:
             
             # Efficient query using indexed rec_id
             query = """
-                SELECT r.rec_id, r.delivered_date, a.identifier, r.data 
-                FROM record r 
-                JOIN app a ON r.app_id = a.app_id 
-                WHERE r.rec_id > ? 
-                ORDER BY r.rec_id ASC
+                SELECT r.rec_id, r.delivered_date, a.identifier, r.data
+                FROM record r
+                JOIN app a ON r.app_id = a.app_id
+                WHERE r.rec_id > ?
+                ORDER BY r.delivered_date ASC, r.rec_id ASC
             """
             
             cursor.execute(query, (self.last_seen_rec_id,))

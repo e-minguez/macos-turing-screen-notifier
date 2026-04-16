@@ -112,30 +112,31 @@ def main():
     while not stop.is_set():
         now = time.monotonic()
 
-        # Check for new notifications (non-blocking)
-        try:
-            notif = notif_queue.get_nowait()
-        except queue.Empty:
-            notif = None
-
-        if notif:
-            state = STATE_NOTIFICATION
-            notif_shown_at = now
-            img = render_notification(
-                app_name=notif.get("app_name", ""),
-                title=notif.get("title", ""),
-                message=notif.get("message", ""),
-                icon_path=notif.get("icon_path", ""),
-                cfg=cfg.notifications,
-                width=w,
-                height=h,
-            )
-            lcd.DisplayPILImage(img)
-
-        elif state == STATE_NOTIFICATION:
+        # Check for new notifications only when the current one has expired (or we're in clock state)
+        if state == STATE_NOTIFICATION:
             if now - notif_shown_at >= cfg.notifications.display_duration:
                 state = STATE_CLOCK
                 last_minute = ""  # Force clock redraw
+
+        if state == STATE_CLOCK:
+            try:
+                notif = notif_queue.get_nowait()
+            except queue.Empty:
+                notif = None
+
+            if notif:
+                state = STATE_NOTIFICATION
+                notif_shown_at = now
+                img = render_notification(
+                    app_name=notif.get("app_name", ""),
+                    title=notif.get("title", ""),
+                    message=notif.get("message", ""),
+                    icon_path=notif.get("icon_path", ""),
+                    cfg=cfg.notifications,
+                    width=w,
+                    height=h,
+                )
+                lcd.DisplayPILImage(img)
 
         if state == STATE_CLOCK:
             current_minute = datetime.now().strftime(cfg.clock.format)
