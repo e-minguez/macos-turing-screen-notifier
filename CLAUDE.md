@@ -33,6 +33,9 @@ Both `ClockConfig` and `NotificationsConfig` have an optional `background_image`
 ### Clock Text Outline
 `ClockConfig` has `stroke_width` (int, default `0`) and `stroke_color` (RGB tuple) fields. When `stroke_width > 0`, Pillow's built-in `stroke_width`/`stroke_fill` parameters on `draw.text()` are used — no manual offset drawing needed. Useful for readability over background images.
 
+### Clock Overlay on Notifications
+`NotificationsConfig` has five overlay fields: `overlay_clock` (bool, default `True`), `overlay_clock_position` (str, default `"bottom-right"`), `overlay_clock_font_size` (int, default `20`), `overlay_clock_color` (RGB tuple, default white), and `overlay_clock_format` (str, default `"%H:%M"`). When `overlay_clock` is `True`, the end of `render_notification()` in `renderer.py` draws the current time in the specified corner using `draw.textbbox()` to measure text size and a dict mapping position name → `(x, y)` with 6 px padding. Valid positions: `"bottom-right"`, `"bottom-left"`, `"top-right"`, `"top-left"`.
+
 ### Icon Handling
 App icons come as `.icns` files from `notification_listener.py` (resolved via `mdfind` + `Info.plist`).
 Convert to PNG using the built-in macOS `sips` tool:

@@ -47,6 +47,11 @@ class NotificationsConfig:
         default_factory=lambda: (26, 26, 46)
     )
     background_image: str = ""
+    overlay_clock: bool = True
+    overlay_clock_position: str = "bottom-right"
+    overlay_clock_font_size: int = 20
+    overlay_clock_color: Tuple[int, int, int] = field(default_factory=lambda: (255, 255, 255))
+    overlay_clock_format: str = "%H:%M"
 
 
 @dataclass
@@ -105,6 +110,11 @@ def load_config(path: str = "config.yaml") -> Config:
             notif_raw.get("background_color", "#1a1a2e")
         ),
         background_image=notif_raw.get("background_image", ""),
+        overlay_clock=bool(notif_raw.get("overlay_clock", True)),
+        overlay_clock_position=notif_raw.get("overlay_clock_position", "bottom-right"),
+        overlay_clock_font_size=int(notif_raw.get("overlay_clock_font_size", 20)),
+        overlay_clock_color=_parse_color(notif_raw.get("overlay_clock_color", "#FFFFFF")),
+        overlay_clock_format=notif_raw.get("overlay_clock_format", "%H:%M"),
     )
 
     return Config(display=display, clock=clock, notifications=notifications)

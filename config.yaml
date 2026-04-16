@@ -26,3 +26,8 @@ notifications:
   text_color: "#FFFFFF"
   background_color: "#1a1a2e"
   # background_image: "turing-smart-screen-python/res/backgrounds/example_320x480.png"
+  overlay_clock: true                    # Show a small clock during notification display
+  overlay_clock_position: "bottom-right" # bottom-right, bottom-left, top-right, top-left
+  overlay_clock_font_size: 20            # Font size in pixels
+  overlay_clock_color: "#FFFFFF"         # Text color
+  overlay_clock_format: "%H:%M"          # strftime format

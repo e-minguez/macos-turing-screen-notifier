@@ -139,6 +139,11 @@ All settings live in `config.yaml`.
 | `text_color` | `"#FFFFFF"` | Text color |
 | `background_color` | `"#1a1a2e"` | Background color (used when no `background_image` is set) |
 | `background_image` | _(none)_ | Path to a background image — overrides `background_color`. Scaled to fit the screen. |
+| `overlay_clock` | `true` | Show a small clock in the corner while a notification is displayed |
+| `overlay_clock_position` | `"bottom-right"` | Corner for the overlay: `"bottom-right"`, `"bottom-left"`, `"top-right"`, `"top-left"` |
+| `overlay_clock_font_size` | `20` | Font size in pixels for the overlay clock |
+| `overlay_clock_color` | `"#FFFFFF"` | Text color for the overlay clock |
+| `overlay_clock_format` | `"%H:%M"` | [strftime](https://strftime.org) format for the overlay clock |
 
 The submodule ships ready-made backgrounds sized for Turing screens:
 

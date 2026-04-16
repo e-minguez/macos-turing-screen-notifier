@@ -9,17 +9,29 @@ from PIL import Image, ImageDraw, ImageFont
 from config import ClockConfig, NotificationsConfig
 
 
+_font_cache: dict = {}
+
+
 def _load_font(path: str, size: int) -> ImageFont.FreeTypeFont:
-    try:
-        return ImageFont.truetype(path, size)
-    except (IOError, OSError):
-        return ImageFont.load_default()
+    key = (path, size)
+    if key not in _font_cache:
+        try:
+            _font_cache[key] = ImageFont.truetype(path, size)
+        except (IOError, OSError):
+            _font_cache[key] = ImageFont.load_default()
+    return _font_cache[key]
+
+
+_fit_cache: dict = {}
 
 
 def _fit_font_size(
     font_path: str, text: str, max_width: int, max_height: int, padding: float = 0.9
 ) -> ImageFont.FreeTypeFont:
     """Binary-search for the largest font size where text fits within the given area."""
+    key = (font_path, text, max_width, max_height, padding)
+    if key in _fit_cache:
+        return _fit_cache[key]
     target_w = int(max_width * padding)
     target_h = int(max_height * padding)
     lo, hi = 8, max(max_width, max_height)
@@ -34,7 +46,9 @@ def _fit_font_size(
             lo = mid + 1
         else:
             hi = mid - 1
-    return _load_font(font_path, best)
+    result = _load_font(font_path, best)
+    _fit_cache[key] = result
+    return result
 
 
 def _wrap_text(text: str, font: ImageFont.FreeTypeFont, max_width: int) -> list[str]:
@@ -207,5 +221,21 @@ def render_notification(
             draw.text((padding, body_y), line, font=font_body, fill=body_text_color)
             bbox = font_body.getbbox(line) if line else (0, 0, 0, cfg.body_font_size)
             body_y += (bbox[3] - bbox[1]) + 4
+
+    if cfg.overlay_clock:
+        now_str = datetime.now().strftime(cfg.overlay_clock_format)
+        font_overlay = _load_font(cfg.font, cfg.overlay_clock_font_size)
+        bbox = draw.textbbox((0, 0), now_str, font=font_overlay)
+        tw = bbox[2] - bbox[0]
+        th = bbox[3] - bbox[1]
+        ovl_padding = 6
+        pos_map = {
+            "bottom-right": (width - tw - ovl_padding, height - th - ovl_padding),
+            "bottom-left":  (ovl_padding,               height - th - ovl_padding),
+            "top-right":    (width - tw - ovl_padding,  ovl_padding),
+            "top-left":     (ovl_padding,               ovl_padding),
+        }
+        ox, oy = pos_map.get(cfg.overlay_clock_position, pos_map["bottom-right"])
+        draw.text((ox, oy), now_str, font=font_overlay, fill=cfg.overlay_clock_color)
 
     return img
