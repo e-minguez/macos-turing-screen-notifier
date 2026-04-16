@@ -31,3 +31,16 @@ notifications:
   overlay_clock_font_size: 20            # Font size in pixels
   overlay_clock_color: "#FFFFFF"         # Text color
   overlay_clock_format: "%H:%M"          # strftime format
+
+weather:
+  enabled: false               # Set to true and set latitude/longitude to enable
+  latitude: 0.0                # Your location latitude  (e.g. 40.7128 for New York)
+  longitude: 0.0               # Your location longitude (e.g. -74.0060 for New York)
+  temperature_unit: "celsius"  # celsius or fahrenheit
+  refresh_interval: 30         # Minutes between weather updates
+  show_icon: true              # Draw a small geometric weather icon
+  show_temperature: true       # Show temperature value (e.g. 22°C)
+  show_condition: true         # Show condition label (e.g. Sunny)
+  font_size: 16                # Font size for weather text
+  color: "#FFFFFF"             # Weather text and icon color
+  position: "bottom"           # top, bottom, top-left, top-right, bottom-left, bottom-right

@@ -1,3 +1,4 @@
+import math
 import os
 import subprocess
 import tempfile
@@ -6,7 +7,7 @@ from typing import Optional
 
 from PIL import Image, ImageDraw, ImageFont
 
-from config import ClockConfig, NotificationsConfig
+from config import ClockConfig, NotificationsConfig, WeatherConfig
 
 
 _font_cache: dict = {}
@@ -111,7 +112,78 @@ def _load_icon(icon_path: str, size: int) -> Optional[Image.Image]:
         return None
 
 
-def render_clock(cfg: ClockConfig, width: int, height: int) -> Image.Image:
+def _draw_weather_icon(
+    draw: ImageDraw.ImageDraw,
+    cx: int,
+    cy: int,
+    size: int,
+    weather_code: int,
+    is_day: int,
+) -> None:
+    """Draw a geometric weather icon centered at (cx, cy) within a size×size box."""
+    s = size
+    r = max(2, s // 3)
+
+    def _cloud(ox, oy, w, h, color=(180, 180, 180)):
+        draw.ellipse([ox - w // 2, oy - h // 4, ox + w // 2, oy + h // 2], fill=color)
+        draw.ellipse([ox - w // 3, oy - h // 2, ox + w // 6, oy + h // 4], fill=color)
+        draw.ellipse([ox, oy - h // 3, ox + w // 2 - 2, oy + h // 4], fill=color)
+
+    def _sun(ox, oy, r, color=(255, 200, 0)):
+        draw.ellipse([ox - r, oy - r, ox + r, oy + r], fill=color)
+        ray = max(2, s // 6)
+        for deg in range(0, 360, 45):
+            a = math.radians(deg)
+            draw.line(
+                [ox + int((r + 1) * math.cos(a)), oy + int((r + 1) * math.sin(a)),
+                 ox + int((r + ray) * math.cos(a)), oy + int((r + ray) * math.sin(a))],
+                fill=color, width=max(1, s // 14),
+            )
+
+    if weather_code == 0:
+        if is_day:
+            _sun(cx, cy, r)
+        else:
+            draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(200, 210, 255))
+    elif weather_code in (1, 2):
+        _sun(cx + s // 5, cy - s // 6, max(2, r * 2 // 3))
+        _cloud(cx - s // 8, cy + s // 8, int(s * 0.55), int(s * 0.35))
+    elif weather_code == 3:
+        _cloud(cx, cy, int(s * 0.7), int(s * 0.4))
+    elif weather_code in (45, 48):
+        lw = max(1, s // 10)
+        for i in range(3):
+            y = cy - r + i * r
+            draw.line([cx - r, y, cx + r, y], fill=(160, 160, 160), width=lw)
+    elif weather_code in (51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82):
+        _cloud(cx, cy - s // 6, int(s * 0.65), int(s * 0.35))
+        lw = max(1, s // 12)
+        for dx in (-s // 5, 0, s // 5):
+            draw.line([cx + dx, cy + s // 6, cx + dx - 2, cy + s // 2 - 2],
+                      fill=(80, 140, 255), width=lw)
+    elif weather_code in (71, 73, 75, 77, 85, 86):
+        _cloud(cx, cy - s // 6, int(s * 0.65), int(s * 0.35))
+        rd = max(1, s // 10)
+        for dx in (-s // 5, 0, s // 5):
+            x = cx + dx
+            draw.ellipse([x - rd, cy + s // 4 - rd, x + rd, cy + s // 4 + rd],
+                         fill=(220, 235, 255))
+    elif weather_code in (95, 96, 99):
+        _cloud(cx, cy - s // 6, int(s * 0.65), int(s * 0.35), color=(110, 110, 130))
+        pts = [
+            (cx + s // 8,  cy + s // 6),
+            (cx - s // 8,  cy + s // 3),
+            (cx + s // 12, cy + s // 3),
+            (cx - s // 6,  cy + s // 2),
+        ]
+        draw.line(pts, fill=(255, 210, 0), width=max(1, s // 8))
+    else:
+        draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(150, 150, 150))
+
+
+def render_clock(cfg: ClockConfig, width: int, height: int,
+                 weather_data: Optional[dict] = None,
+                 weather_cfg: Optional[WeatherConfig] = None) -> Image.Image:
     img = _make_background(cfg.background_image, cfg.background_color, width, height)
     draw = ImageDraw.Draw(img)
 
@@ -145,6 +217,72 @@ def render_clock(cfg: ClockConfig, width: int, height: int) -> Image.Image:
         stroke_width=cfg.stroke_width,
         stroke_fill=cfg.stroke_color if cfg.stroke_width else None,
     )
+
+    if weather_cfg and weather_data:
+        # Build list of enabled display elements
+        elements = []
+        if weather_cfg.show_icon:
+            elements.append(("icon",))
+        if weather_cfg.show_temperature:
+            elements.append(("text", f"{weather_data['temperature']:.0f}{weather_data['unit']}"))
+        if weather_cfg.show_condition:
+            elements.append(("text", weather_data["condition"]))
+
+        if elements:
+            wfont = _load_font(cfg.font, weather_cfg.font_size)
+            icon_sz = weather_cfg.font_size + 4
+            gap = 4
+
+            # Measure each element
+            el_widths = []
+            el_heights = []
+            el_bboxes = []
+            for el in elements:
+                if el[0] == "icon":
+                    el_widths.append(icon_sz)
+                    el_heights.append(icon_sz)
+                    el_bboxes.append(None)
+                else:
+                    bb = wfont.getbbox(el[1])
+                    el_widths.append(bb[2] - bb[0])
+                    el_heights.append(bb[3] - bb[1])
+                    el_bboxes.append(bb)
+
+            total_w = sum(el_widths) + gap * (len(elements) - 1)
+            row_h = max(el_heights)
+
+            # Determine starting position
+            wpad = 8
+            pos = weather_cfg.position
+            if pos in ("bottom", "top"):
+                x_start = (width - total_w) // 2
+            elif pos in ("top-left", "bottom-left"):
+                x_start = wpad
+            else:  # top-right, bottom-right
+                x_start = width - total_w - wpad
+
+            if pos in ("top", "top-left", "top-right"):
+                y_start = wpad
+            else:  # bottom, bottom-left, bottom-right
+                y_start = height - row_h - wpad
+
+            # Draw each element left to right
+            wx = x_start
+            for i, (el, ew, eh, eb) in enumerate(zip(elements, el_widths, el_heights, el_bboxes)):
+                if el[0] == "icon":
+                    _draw_weather_icon(
+                        draw,
+                        wx + icon_sz // 2,
+                        y_start + row_h // 2,
+                        icon_sz,
+                        weather_data["weather_code"],
+                        weather_data.get("is_day", 1),
+                    )
+                else:
+                    text_y = y_start + (row_h - eh) // 2 - (eb[1] if eb else 0)
+                    draw.text((wx, text_y), el[1], font=wfont, fill=weather_cfg.color)
+                wx += ew + (gap if i < len(elements) - 1 else 0)
+
     return img
 
 

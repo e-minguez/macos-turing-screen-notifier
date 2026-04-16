@@ -8,6 +8,7 @@ A Python app that turns a [Turing Smart Screen](https://github.com/mathoudebine/
 ![Clock display on simulated screen](screencap.png) ![Clock with background image](screencap-background.png) ![Notification display](screencap-notification.png)
 
 - **Clock** — fills the screen, updates every minute, fully customizable (font, size, color, format)
+- **Weather** — optionally shows current temperature, condition, and a geometric icon on the clock screen, fetched from [Open-Meteo](https://open-meteo.com/) (free, no API key)
 - **Notifications** — when a macOS notification arrives, the screen switches to show the app icon, app name, title, and message, then returns to the clock
 
 ## Requirements
@@ -152,6 +153,28 @@ clock:
   background_image: "turing-smart-screen-python/res/backgrounds/example_320x480.png"
 ```
 
+### `weather`
+
+Weather is **disabled by default**. Set `enabled: true` and provide your coordinates to activate it.
+
+| Key | Default | Description |
+|-----|---------|-------------|
+| `enabled` | `false` | Enable weather display on the clock screen |
+| `latitude` | `0.0` | Your location latitude (e.g. `40.7128`) |
+| `longitude` | `0.0` | Your location longitude (e.g. `-74.0060`) |
+| `temperature_unit` | `"celsius"` | `"celsius"` or `"fahrenheit"` |
+| `refresh_interval` | `30` | Minutes between API calls to [Open-Meteo](https://open-meteo.com/) |
+| `show_icon` | `true` | Draw a small geometric weather icon |
+| `show_temperature` | `true` | Show temperature value (e.g. `22°C`) |
+| `show_condition` | `true` | Show condition label (e.g. `Sunny`) |
+| `font_size` | `16` | Font size in pixels for weather text |
+| `color` | `"#FFFFFF"` | Text and icon color |
+| `position` | `"bottom"` | `"top"`, `"bottom"`, `"top-left"`, `"top-right"`, `"bottom-left"`, `"bottom-right"` |
+
+Any combination of `show_icon`, `show_temperature`, `show_condition` is valid — disable any elements you don't want.
+
+Weather data comes from [Open-Meteo](https://open-meteo.com/) (free, no API key required). Expect a 5–10 second delay on first start before weather appears.
+
 ## Running at Login (Background Service)
 
 Use a macOS **LaunchAgent** to start the app automatically at login.
@@ -256,6 +279,7 @@ macos-notification-turing-screen/
 ├── config.yaml                  # Default settings (safe to commit)
 ├── config.local.yaml            # Local overrides — gitignored, takes precedence over config.yaml
 ├── renderer.py                  # PIL-based screen rendering
+├── weather.py                   # Weather fetcher (Open-Meteo, background thread)
 ├── notification_listener.py     # macOS notification watcher (kqueue + SQLite)
 ├── requirements.txt
 ├── CLAUDE.md                    # Developer notes

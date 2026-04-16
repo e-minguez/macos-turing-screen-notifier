@@ -55,10 +55,26 @@ class NotificationsConfig:
 
 
 @dataclass
+class WeatherConfig:
+    enabled: bool = False
+    latitude: float = 0.0
+    longitude: float = 0.0
+    temperature_unit: str = "celsius"
+    refresh_interval: int = 30
+    show_icon: bool = True
+    show_temperature: bool = True
+    show_condition: bool = True
+    font_size: int = 16
+    color: Tuple[int, int, int] = field(default_factory=lambda: (255, 255, 255))
+    position: str = "bottom"
+
+
+@dataclass
 class Config:
     display: DisplayConfig = field(default_factory=DisplayConfig)
     clock: ClockConfig = field(default_factory=ClockConfig)
     notifications: NotificationsConfig = field(default_factory=NotificationsConfig)
+    weather: WeatherConfig = field(default_factory=WeatherConfig)
 
 
 def load_config(path: str = "config.yaml") -> Config:
@@ -71,6 +87,7 @@ def load_config(path: str = "config.yaml") -> Config:
     display_raw = raw.get("display", {})
     clock_raw = raw.get("clock", {})
     notif_raw = raw.get("notifications", {})
+    weather_raw = raw.get("weather", {})
 
     display = DisplayConfig(
         revision=display_raw.get("revision", "SIMU"),
@@ -117,4 +134,18 @@ def load_config(path: str = "config.yaml") -> Config:
         overlay_clock_format=notif_raw.get("overlay_clock_format", "%H:%M"),
     )
 
-    return Config(display=display, clock=clock, notifications=notifications)
+    weather = WeatherConfig(
+        enabled=bool(weather_raw.get("enabled", False)),
+        latitude=float(weather_raw.get("latitude", 0.0)),
+        longitude=float(weather_raw.get("longitude", 0.0)),
+        temperature_unit=weather_raw.get("temperature_unit", "celsius"),
+        refresh_interval=int(weather_raw.get("refresh_interval", 30)),
+        show_icon=bool(weather_raw.get("show_icon", True)),
+        show_temperature=bool(weather_raw.get("show_temperature", True)),
+        show_condition=bool(weather_raw.get("show_condition", True)),
+        font_size=int(weather_raw.get("font_size", 16)),
+        color=_parse_color(weather_raw.get("color", "#FFFFFF")),
+        position=weather_raw.get("position", "bottom"),
+    )
+
+    return Config(display=display, clock=clock, notifications=notifications, weather=weather)

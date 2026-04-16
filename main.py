@@ -81,6 +81,13 @@ def main():
     lcd = init_display(cfg)
     w, h = lcd.get_width(), lcd.get_height()
 
+    # Start weather service (optional)
+    weather_service = None
+    if cfg.weather.enabled:
+        from weather import WeatherService
+        weather_service = WeatherService(cfg.weather)
+        weather_service.start()
+
     # Start notification listener subprocess
     proc = subprocess.Popen(
         [sys.executable, LISTENER_PATH],
@@ -102,6 +109,7 @@ def main():
     state = STATE_CLOCK
 
     last_minute = ""
+    last_weather = None
     notif_shown_at = 0.0
 
     # Render initial clock immediately
@@ -139,11 +147,17 @@ def main():
                 lcd.DisplayPILImage(img)
 
         if state == STATE_CLOCK:
+            weather_data = weather_service.get() if weather_service else None
             current_minute = datetime.now().strftime(cfg.clock.format)
-            if current_minute != last_minute:
-                img = render_clock(cfg.clock, w, h)
+            if current_minute != last_minute or weather_data != last_weather:
+                img = render_clock(
+                    cfg.clock, w, h,
+                    weather_data=weather_data,
+                    weather_cfg=cfg.weather if cfg.weather.enabled else None,
+                )
                 lcd.DisplayPILImage(img)
                 last_minute = current_minute
+                last_weather = weather_data
 
         time.sleep(1)
 

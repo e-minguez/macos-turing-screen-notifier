@@ -36,6 +36,17 @@ Both `ClockConfig` and `NotificationsConfig` have an optional `background_image`
 ### Clock Overlay on Notifications
 `NotificationsConfig` has five overlay fields: `overlay_clock` (bool, default `True`), `overlay_clock_position` (str, default `"bottom-right"`), `overlay_clock_font_size` (int, default `20`), `overlay_clock_color` (RGB tuple, default white), and `overlay_clock_format` (str, default `"%H:%M"`). When `overlay_clock` is `True`, the end of `render_notification()` in `renderer.py` draws the current time in the specified corner using `draw.textbbox()` to measure text size and a dict mapping position name → `(x, y)` with 6 px padding. Valid positions: `"bottom-right"`, `"bottom-left"`, `"top-right"`, `"top-left"`.
 
+### Weather Display
+`WeatherConfig` (11 fields) lives in `config.py`. Key fields: `enabled`, `latitude`, `longitude`, `temperature_unit` (`"celsius"`/`"fahrenheit"`), `refresh_interval` (minutes), `show_icon`, `show_temperature`, `show_condition`, `font_size`, `color`, `position`.
+
+**`weather.py`** — `WeatherService` runs a single daemon thread (`threading.Thread(daemon=True)`). On start it fetches immediately, then sleeps `refresh_interval * 60` seconds between fetches. Calls Open-Meteo: `https://api.open-meteo.com/v1/forecast?current=temperature_2m,weather_code,is_day`. Returns `{"temperature", "weather_code", "is_day", "condition", "unit"}`. On error, keeps last good data (no crash); logs to stderr. Thread-safe `get()` uses a `threading.Lock`.
+
+**`renderer.py`** — `_draw_weather_icon(draw, cx, cy, size, weather_code, is_day)` draws PIL geometric icons using `draw.ellipse()`, `draw.line()`, `draw.polygon()`. WMO code groups: 0=sun/moon, 1-2=partly cloudy, 3=overcast, 45/48=fog lines, 51-67/80-82=rain (cloud+drops), 71-77/85-86=snow (cloud+dots), 95-99=thunder (cloud+bolt). `render_clock()` signature extended with `weather_data: Optional[dict] = None` and `weather_cfg: Optional[WeatherConfig] = None`. Weather row is assembled from enabled elements (icon, temp text, condition text) measured individually, laid out left-to-right with 4px gaps, positioned using `weather_cfg.position` (6 positions: top/bottom + 4 corners, 8px padding).
+
+**`main.py`** — `WeatherService` is started after `init_display()` if `cfg.weather.enabled`. `last_weather` is tracked alongside `last_minute`; clock re-renders when either changes (so weather update mid-minute still refreshes the display).
+
+**Do NOT** add weather icons as image files — the PIL-drawn approach requires no external assets and works at any size.
+
 ### Icon Handling
 App icons come as `.icns` files from `notification_listener.py` (resolved via `mdfind` + `Info.plist`).
 Convert to PNG using the built-in macOS `sips` tool:
@@ -52,6 +63,7 @@ macos-notification-turing-screen/
 ├── config.yaml                  # User configuration (edit this)
 ├── config.py                    # Loads config.yaml, provides defaults
 ├── renderer.py                  # PIL rendering: render_clock(), render_notification()
+├── weather.py                   # WeatherService: Open-Meteo fetch + background thread
 ├── notification_listener.py     # kqueue notification watcher (run as subprocess)
 ├── main.py                      # Entry point: display init + event loop
 ├── requirements.txt
