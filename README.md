@@ -170,6 +170,8 @@ Weather is **disabled by default**. Set `enabled: true` and provide your coordin
 | `font_size` | `16` | Font size in pixels for weather text |
 | `color` | `"#FFFFFF"` | Text and icon color |
 | `position` | `"bottom"` | `"top"`, `"bottom"`, `"top-left"`, `"top-right"`, `"bottom-left"`, `"bottom-right"` |
+| `background_color` | `"#000000"` | Color of the background box drawn behind the weather display |
+| `background_opacity` | `0` | Box opacity 0–100 (`0` = no box, `100` = fully opaque). Useful when the weather is hard to read over a background image. |
 
 Any combination of `show_icon`, `show_temperature`, `show_condition` is valid — disable any elements you don't want.
 

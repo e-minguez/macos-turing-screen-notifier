@@ -266,6 +266,20 @@ def render_clock(cfg: ClockConfig, width: int, height: int,
             else:  # bottom, bottom-left, bottom-right
                 y_start = height - row_h - wpad
 
+            # Draw semi-transparent background box if requested
+            if weather_cfg.background_opacity > 0:
+                alpha = int(max(0, min(100, weather_cfg.background_opacity)) / 100 * 255)
+                r, g, b = weather_cfg.background_color
+                box_pad = 6
+                overlay = Image.new("RGBA", img.size, (0, 0, 0, 0))
+                ImageDraw.Draw(overlay).rectangle(
+                    [x_start - box_pad, y_start - box_pad,
+                     x_start + total_w + box_pad, y_start + row_h + box_pad],
+                    fill=(r, g, b, alpha),
+                )
+                img = Image.alpha_composite(img.convert("RGBA"), overlay).convert("RGB")
+                draw = ImageDraw.Draw(img)
+
             # Draw each element left to right
             wx = x_start
             for i, (el, ew, eh, eb) in enumerate(zip(elements, el_widths, el_heights, el_bboxes)):

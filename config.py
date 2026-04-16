@@ -67,6 +67,8 @@ class WeatherConfig:
     font_size: int = 16
     color: Tuple[int, int, int] = field(default_factory=lambda: (255, 255, 255))
     position: str = "bottom"
+    background_color: Tuple[int, int, int] = field(default_factory=lambda: (0, 0, 0))
+    background_opacity: int = 0
 
 
 @dataclass
@@ -146,6 +148,8 @@ def load_config(path: str = "config.yaml") -> Config:
         font_size=int(weather_raw.get("font_size", 16)),
         color=_parse_color(weather_raw.get("color", "#FFFFFF")),
         position=weather_raw.get("position", "bottom"),
+        background_color=_parse_color(weather_raw.get("background_color", "#000000")),
+        background_opacity=int(weather_raw.get("background_opacity", 0)),
     )
 
     return Config(display=display, clock=clock, notifications=notifications, weather=weather)

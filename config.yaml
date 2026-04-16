@@ -44,3 +44,5 @@ weather:
   font_size: 16                # Font size for weather text
   color: "#FFFFFF"             # Weather text and icon color
   position: "bottom"           # top, bottom, top-left, top-right, bottom-left, bottom-right
+  background_color: "#000000"  # Color of the background box behind the weather display
+  background_opacity: 0        # Box opacity 0-100 (0 = transparent / no box, 100 = fully opaque)
